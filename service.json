@@ -1,0 +1,106 @@
+{
+  "services": [
+    {
+      "category": "Face Care",
+      "subcategories": [
+        {
+          "name": "Regular Facials",
+          "services": [
+            {"name": "Pappaya Face Cleanup", "price": 399},
+            {"name": "Fruit Blush Luster", "price": 499},
+            {"name": "Pappaya Nourishment VLCC", "price": 599},
+            {"name": "Skin Tightening/Anti Tan VLCC", "price": 699},
+            {"name": "Instant Glow VLCC", "price": 799},
+            {"name": "Brighten Glow Lotus/Aroma Magic", "price": 899},
+            {"name": "Skin Whitening VLCC/Lotus", "price": 899}
+          ]
+        },
+        {
+          "name": "Premium Facials",
+          "services": [
+            {"name": "Ubtan's Season Special", "price": 999},
+            {"name": "Pore Tightening & Brightening", "price": 1199},
+            {"name": "Gold Radiance (VLCC/Lotus/Vedic Line)", "price": 1299},
+            {"name": "Di-pigmentation & Skin Lifting", "price": 1249},
+            {"name": "O3 Premium Whitening", "price": 1899}
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Body Care",
+      "services": [
+        {"name": "Pedicure (30 mins)", "price": 449},
+        {"name": "Manicure (30 mins)", "price": 349}
+      ]
+    },
+    {
+      "category": "Waxing",
+      "services": [
+        {"name": "Full Legs", "price": {"Regular": 379, "Chocolate": 449, "Italian": 549}},
+        {"name": "Half Legs", "price": {"Regular": 299, "Chocolate": 399, "Italian": 499}},
+        {"name": "Full Hands", "price": {"Regular": 299, "Chocolate": 399, "Italian": 499}},
+        {"name": "Full Back", "price": {"Regular": 349, "Chocolate": 449, "Italian": 549}},
+        {"name": "Stomach", "price": {"Regular": 249, "Chocolate": 349, "Italian": 449}},
+        {"name": "Combo", "price": {"Regular": 699, "Chocolate": 899, "Italian": 999}},
+        {"name": "Underarm", "price": {"Regular": 79, "Chocolate": 99, "Italian": 149}}
+      ]
+    },
+    {
+      "category": "Hair Care",
+      "services": [
+        {"name": "Hot Oil Hair to Shoulder", "price": 199},
+        {"name": "Anti Hair Fall", "price": 249},
+        {"name": "Hair Color Application", "price": 175},
+        {"name": "Hair Spa (Herbal)", "price": 699},
+        {"name": "Hair Spa (L'Oreal)", "price": 899},
+        {"name": "Hair Cutting", "price": 299},
+        {"name": "Hair Henna", "price": 299}
+      ]
+    },
+    {
+      "category": "Massages",
+      "subcategories": [
+        {
+          "name": "Body Polishing",
+          "services": [
+            {"name": "Full Hands", "price": 349},
+            {"name": "Half Legs", "price": 399},
+            {"name": "Full Back", "price": 449},
+            {"name": "Tummy", "price": 299}
+          ]
+        },
+        {
+          "name": "Relaxing Oil",
+          "services": [
+            {"name": "Full Hands", "price": 299},
+            {"name": "Half Legs", "price": 349},
+            {"name": "Full Back", "price": 399},
+            {"name": "Tummy", "price": 199}
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Makeup",
+      "services": [
+        {"name": "Express Makeup", "price": 1299},
+        {"name": "Party Makeup", "price": 1799},
+        {"name": "Special Day Makeup", "price": 3999},
+        {"name": "Bridal Makeup", "price": 7999},
+        {"name": "Saree Draping", "price": "399-599"},
+        {"name": "Ironing", "price": 799},
+        {"name": "Toung", "price": 799},
+        {"name": "Up-Donus", "price": "899-1199"}
+      ]
+    },
+    {
+      "category": "Packages",
+      "services": [
+        {"name": "All-in-One", "description": "VLCC Glow Facial + Pedicure + Full Face Threading", "price": 1249},
+        {"name": "Clean & Shine", "description": "Lotus Glow Facial + Waxing Combo + Hot Oil Massage", "price": 1649},
+        {"name": "Family & Friends", "description": "1 Fruit Facial VLCC + 1 Skin Tightening Facial VLCC + 2 Pedicures", "price": 1999}
+      ]
+    }
+  ]
+}
