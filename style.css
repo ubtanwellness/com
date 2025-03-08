@@ -11,7 +11,7 @@ body {
     padding: 10px;
     border-radius: 5px;
     filter: brightness(0) invert(1);
-    width: 200px; /* Adjust as needed */
+    width: 400px; /* Adjust as needed */
     height: auto;
 }
 
