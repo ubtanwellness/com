@@ -85,15 +85,15 @@
         var total_price = $("#total_price").val();
 
         // Create a data object
-        var formData = {
-          name: name,
-          phone: phone,
-          email: email,
-          address: address,
-          gps_location: gps_location,
-          services: services.join(", "), // Convert array to string
-          total_price: total_price
-        };
+       var formData = {
+  name: "John Doe",  // Example name
+  phone: "1234567890",  // Example phone number
+  email: "john.doe@example.com",  // Example email
+  address: "1234 Elm Street, Springfield",  // Example address
+  gps_location: "12.9716° N, 77.5946° E",  // Example GPS location (latitude, longitude)
+  services: "Service 1 - ₹100, Service 2 - ₹200",  // Example selected services as a string
+  total_price: "₹300"  // Example total price
+};
 
         // Send the data to Google Apps Script using fetch
         fetch('https://script.google.com/macros/s/AKfycbyd6U6ONTxIka2NIRaD9w7mvLWJ3_7tW4bqDvb2eSWBDPhQFzGV1iQmP1CzBog7jfQBQw/exec', {
