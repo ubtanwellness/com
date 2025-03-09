@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification in Form</title>
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcJ_SfhDq2I1L6iXdeNsOmG6-54top_lY",
+            authDomain: "ubtan-47b67.firebaseapp.com",
+            projectId: "ubtan-47b67",
+            storageBucket: "ubtan-47b67.appspot.com",
+            messagingSenderId: "289764255030",
+            appId: "1:289764255030:web:72e9887bb6c91334cbff97",
+            measurementId: "G-GP0LNZ275Y"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        auth.useDeviceLanguage(); // Set language to device default
+
+        let confirmationResult; // Store OTP confirmation result
+        let isVerified = false; // To check if OTP verification is done
+
+        // Setup reCAPTCHA
+        function setupRecaptcha() {
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+                size: "invisible",
+                callback: (response) => {
+                    console.log("reCAPTCHA verified");
+                }
+            });
+        }
+
+        // Send OTP
+        window.sendOTP = function(event) {
+            event.preventDefault(); // Prevent page reload
+
+            const phoneNumber = document.getElementById("phone").value;
+            if (!phoneNumber.startsWith("+")) {
+                alert("Please enter phone number in international format (e.g., +91XXXXXXXXXX)");
+                return;
+            }
+
+            setupRecaptcha(); // Ensure reCAPTCHA is initialized
+            const appVerifier = window.recaptchaVerifier;
+
+            signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+                .then((result) => {
+                    confirmationResult = result;
+                    alert("OTP sent successfully!");
+                    document.getElementById("otp-section").style.display = "block";
+                })
+                .catch((error) => {
+                    console.error("Error sending OTP:", error);
+                    alert("Failed to send OTP. Check console for details.");
+                });
+        };
+
+        // Verify OTP
+        window.verifyOTP = function(event) {
+            event.preventDefault(); // Prevent page reload
+
+            const otp = document.getElementById("otp").value;
+            if (!otp) {
+                alert("Please enter the OTP");
+                return;
+            }
+
+            confirmationResult.confirm(otp)
+                .then((result) => {
+                    alert("Phone number verified successfully!");
+                    isVerified = true; // Mark verification as successful
+                    document.getElementById("otp-status").innerText = "✅ Verified";
+                })
+                .catch((error) => {
+                    console.error("Error verifying OTP:", error);
+                    alert("Invalid OTP. Try again.");
+                });
+        };
+
+        // Handle Form Submission
+        window.submitForm = function(event) {
+            event.preventDefault(); // Prevent normal form submission
+
+            if (!isVerified) {
+                alert("Please verify your phone number before submitting.");
+                return;
+            }
+
+            alert("Form submitted successfully!");
+            document.getElementById("main-form").submit(); // Proceed with form submission
+        };
+    </script>
+</head>
+<body>
+
+    <h2>Registration Form with OTP Verification</h2>
+
+    <!-- Main Form -->
+    <form id="main-form" onsubmit="submitForm(event)">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <!-- Phone Number with OTP Verification -->
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" placeholder="+91XXXXXXXXXX" required>
+        <button type="button" onclick="sendOTP(event)">Get OTP</button>
+
+        <div id="recaptcha-container"></div> <!-- reCAPTCHA container -->
+
+        <!-- OTP Input -->
+        <div id="otp-section" style="display: none;">
+            <label for="otp">Enter OTP:</label>
+            <input type="text" id="otp" placeholder="Enter OTP" required>
+            <button type="button" onclick="verifyOTP(event)">Verify OTP</button>
+            <span id="otp-status"></span>
+        </div>
+
+        <button type="submit">Submit Form</button>
+    </form>
+
+</body>
+</html>
