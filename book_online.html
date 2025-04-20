@@ -128,48 +128,84 @@
 
             // Fetch services from the JSON file (you can replace this with your GitHub URL)
             $.getJSON('https://raw.githubusercontent.com/ubtanwellness/com/main/service.json', function(data) {
-                let servicesAccordion = $("#servicesAccordion");
-                data.services.forEach(function(category) {
-                    let accordionItem = `
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${category.category.replace(/\s+/g, '')}">
-                                    <i class="fa fa-briefcase me-2"></i> ${category.category}
-                                </button>
-                            </h2>
-                            <div id="${category.category.replace(/\s+/g, '')}" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
-                                <div class="accordion-body">
-                                    ${category.subcategories ? category.subcategories.map(function(subcategory) {
-                                        return `
-                                            <h5>${subcategory.name}</h5>
-                                            ${subcategory.services.map(function(service) {
-                                            return `
-                                                <div class="service-item p-3 mb-2 border rounded">
-                                                    <h6>${service.name}</h6>
+    let servicesAccordion = $("#servicesAccordion");
+    data.services.forEach(function(category) {
+        let accordionItem = `
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${category.category.replace(/\s+/g, '')}">
+                        <i class="fa fa-briefcase me-2"></i> ${category.category}
+                    </button>
+                </h2>
+                <div id="${category.category.replace(/\s+/g, '')}" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        ${category.subcategories ? category.subcategories.map(function(subcategory) {
+                            return `
+                                <h5>${subcategory.name}</h5>
+                                ${subcategory.services.map(function(service) {
+                                    return `
+                                        <div class="service-item p-3 mb-2 border rounded">
+                                            <h6>${service.name}</h6>
+                                            ${
+                                                typeof service.price === 'object'
+                                                ? Object.entries(service.price).map(([type, price]) => `
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span><strong>${type}:</strong> ₹${price}</span>
+                                                        <button class="btn btn-sm btn-pink add-to-cart" 
+                                                            data-name="${service.name} (${type})"
+                                                            data-price="${price}">
+                                                            <i class="fa fa-shopping-cart"></i> Add
+                                                        </button>
+                                                    </div>
+                                                `).join('')
+                                                : `
                                                     <p><strong>Price:</strong> ₹${service.price}</p>
-                                                    <button class="btn btn-sm btn-pink add-to-cart" data-name="${service.name}" data-price="${service.price}">
+                                                    <button class="btn btn-sm btn-pink add-to-cart" 
+                                                        data-name="${service.name}" 
+                                                        data-price="${service.price}">
                                                         <i class="fa fa-shopping-cart"></i> Add to Cart
                                                     </button>
-                                                </div>`;
-                                            }).join('')}
-                                        `;
-                                    }).join('') : category.services.map(function(service) {
-                                        return `
-                                            <div class="service-item p-3 mb-2 border rounded">
-                                                <h6>${service.name}</h6>
-                                                <p><strong>Price:</strong> ₹${service.price}</p>
-                                                <button class="btn btn-sm btn-pink add-to-cart" data-name="${service.name}" data-price="${service.price}">
-                                                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                                                `
+                                            }
+                                        </div>
+                                    `;
+                                }).join('')}
+                            `;
+                        }).join('') : category.services.map(function(service) {
+                            return `
+                                <div class="service-item p-3 mb-2 border rounded">
+                                    <h6>${service.name}</h6>
+                                    ${
+                                        typeof service.price === 'object'
+                                        ? Object.entries(service.price).map(([type, price]) => `
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span><strong>${type}:</strong> ₹${price}</span>
+                                                <button class="btn btn-sm btn-pink add-to-cart" 
+                                                    data-name="${service.name} (${type})"
+                                                    data-price="${price}">
+                                                    <i class="fa fa-shopping-cart"></i> Add
                                                 </button>
-                                            </div>`;
-                                    }).join('')}
+                                            </div>
+                                        `).join('')
+                                        : `
+                                            <p><strong>Price:</strong> ₹${service.price}</p>
+                                            <button class="btn btn-sm btn-pink add-to-cart" 
+                                                data-name="${service.name}" 
+                                                data-price="${service.price}">
+                                                <i class="fa fa-shopping-cart"></i> Add to Cart
+                                            </button>
+                                        `
+                                    }
                                 </div>
-                            </div>
-                        </div>
-                    `;
-                    servicesAccordion.append(accordionItem);
-                });
-            });
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        servicesAccordion.append(accordionItem);
+    });
+});
 
 
             $("#servicesAccordion").on("click", ".add-to-cart", function() {
