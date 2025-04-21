@@ -112,220 +112,194 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JavaScript -->
 
-    <script type="module">
-        // Initialize Firebase (already done in your existing script)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    <!-- Firebase Core (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDcJ_SfhDq2I1L6iXdeNsOmG6-54top_lY",
-            authDomain: "ubtan-47b67.firebaseapp.com",
-            projectId: "ubtan-47b67",
-            storageBucket: "ubtan-47b67.appspot.com",
-            messagingSenderId: "289764255030",
-            appId: "1:289764255030:web:72e9887bb6c91334cbff97",
-            measurementId: "G-GP0LNZ275Y"
-        };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcJ_SfhDq2I1L6iXdeNsOmG6-54top_lY",
+      authDomain: "ubtan-47b67.firebaseapp.com",
+      projectId: "ubtan-47b67",
+      storageBucket: "ubtan-47b67.appspot.com",
+      messagingSenderId: "289764255030",
+      appId: "1:289764255030:web:72e9887bb6c91334cbff97",
+      measurementId: "G-GP0LNZ275Y"
+    };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
 
+    let confirmationResult;
 
-        const auth = getAuth(app);
-        let confirmationResult;
+    $(document).ready(function () {
+      let cart = [];
+      let totalPrice = 0;
 
-
-
-
-
-        $(document).ready(function() {
-            let cart = [];
-            let totalPrice = 0;
-
-            // Fetch services from the JSON file (you can replace this with your GitHub URL)
-            $.getJSON('https://raw.githubusercontent.com/ubtanwellness/com/main/service.json', function(data) {
-    let servicesAccordion = $("#servicesAccordion");
-    data.services.forEach(function(category) {
-        let accordionItem = `
+      // Load services
+      $.getJSON('https://raw.githubusercontent.com/ubtanwellness/com/main/service.json', function (data) {
+        let servicesAccordion = $("#servicesAccordion");
+        data.services.forEach(function (category) {
+          let accordionItem = `
             <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${category.category.replace(/\s+/g, '')}">
-                        <i class="fa fa-briefcase me-2"></i> ${category.category}
-                    </button>
-                </h2>
-                <div id="${category.category.replace(/\s+/g, '')}" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
-                    <div class="accordion-body">
-                        ${category.subcategories ? category.subcategories.map(function(subcategory) {
-                            return `
-                                <h5>${subcategory.name}</h5>
-                                ${subcategory.services.map(function(service) {
-                                    return `
-                                        <div class="service-item p-3 mb-2 border rounded">
-                                            <h6>${service.name}</h6>
-                                            ${
-                                                typeof service.price === 'object'
-                                                ? Object.entries(service.price).map(([type, price]) => `
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span><strong>${type}:</strong> ₹${price}</span>
-                                                        <button class="btn btn-sm btn-pink add-to-cart"
-                                                            data-name="${service.name} (${type})"
-                                                            data-price="${price}">
-                                                            <i class="fa fa-shopping-cart"></i> Add
-                                                        </button>
-                                                    </div>
-                                                `).join('')
-                                                : `
-                                                    <p><strong>Price:</strong> ₹${service.price}</p>
-                                                    <button class="btn btn-sm btn-pink add-to-cart"
-                                                        data-name="${service.name}"
-                                                        data-price="${service.price}">
-                                                        <i class="fa fa-shopping-cart"></i> Add to Cart
-                                                    </button>
-                                                `
-                                            }
-                                        </div>
-                                    `;
-                                }).join('')}
-                            `;
-                        }).join('') : category.services.map(function(service) {
-                            return `
-                                <div class="service-item p-3 mb-2 border rounded">
-                                    <h6>${service.name}</h6>
-                                    ${
-                                        typeof service.price === 'object'
-                                        ? Object.entries(service.price).map(([type, price]) => `
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <span><strong>${type}:</strong> ₹${price}</span>
-                                                <button class="btn btn-sm btn-pink add-to-cart"
-                                                    data-name="${service.name} (${type})"
-                                                    data-price="${price}">
-                                                    <i class="fa fa-shopping-cart"></i> Add
-                                                </button>
-                                            </div>
-                                        `).join('')
-                                        : `
-                                            <p><strong>Price:</strong> ₹${service.price}</p>
-                                            <button class="btn btn-sm btn-pink add-to-cart"
-                                                data-name="${service.name}"
-                                                data-price="${service.price}">
-                                                <i class="fa fa-shopping-cart"></i> Add to Cart
-                                            </button>
-                                        `
-                                    }
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-        servicesAccordion.append(accordionItem);
-    });
-});
-
-
-            $("#servicesAccordion").on("click", ".add-to-cart", function() {
-                let serviceName = $(this).data("name");
-                let servicePrice = parseFloat($(this).data("price"));
-                cart.push({ name: serviceName, price: servicePrice });
-                updateCart();
-            });
-            let cartList = $("#cart-list");
-                let modalCartList = $("#modal-cart-list");
-
-            function updateCart() {
-                let cartList = $("#cart-list");
-                let modalCartList = $("#modal-cart-list");
-                cartList.empty();
-                modalCartList.empty();
-                totalPrice = 0;
-
-                cart.forEach((item, index) => {
-                    let listItem = `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            ${item.name} - ₹${item.price}
-                            <button class="btn btn-sm btn-danger remove-item" data-index="${index}">
-                                <i class="fa fa-times"></i>
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${category.category.replace(/\s+/g, '')}">
+                  <i class="fa fa-briefcase me-2"></i> ${category.category}
+                </button>
+              </h2>
+              <div id="${category.category.replace(/\s+/g, '')}" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
+                <div class="accordion-body">
+                  ${category.subcategories ? category.subcategories.map(function (subcategory) {
+            return `
+                      <h5>${subcategory.name}</h5>
+                      ${subcategory.services.map(function (service) {
+              return `
+                            <div class="service-item p-3 mb-2 border rounded">
+                              <h6>${service.name}</h6>
+                              ${typeof service.price === 'object'
+                  ? Object.entries(service.price).map(([type, price]) => `
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                      <span><strong>${type}:</strong> ₹${price}</span>
+                                      <button class="btn btn-sm btn-pink add-to-cart"
+                                        data-name="${service.name} (${type})"
+                                        data-price="${price}">
+                                        <i class="fa fa-shopping-cart"></i> Add
+                                      </button>
+                                    </div>`).join('')
+                  : `
+                                  <p><strong>Price:</strong> ₹${service.price}</p>
+                                  <button class="btn btn-sm btn-pink add-to-cart"
+                                    data-name="${service.name}"
+                                    data-price="${service.price}">
+                                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                                  </button>
+                                `}
+                            </div>`;
+            }).join('')}
+                    `;
+          }).join('') : category.services.map(function (service) {
+            return `
+                      <div class="service-item p-3 mb-2 border rounded">
+                        <h6>${service.name}</h6>
+                        ${typeof service.price === 'object'
+                ? Object.entries(service.price).map(([type, price]) => `
+                              <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span><strong>${type}:</strong> ₹${price}</span>
+                                <button class="btn btn-sm btn-pink add-to-cart"
+                                  data-name="${service.name} (${type})"
+                                  data-price="${price}">
+                                  <i class="fa fa-shopping-cart"></i> Add
+                                </button>
+                              </div>`).join('')
+                : `
+                            <p><strong>Price:</strong> ₹${service.price}</p>
+                            <button class="btn btn-sm btn-pink add-to-cart"
+                              data-name="${service.name}"
+                              data-price="${service.price}">
+                              <i class="fa fa-shopping-cart"></i> Add to Cart
                             </button>
-                        </li>`;
-                    cartList.append(listItem);
-                    modalCartList.append(listItem);
-                    totalPrice += item.price;
-                });
+                          `}
+                      </div>`;
+          }).join('')}
+                </div>
+              </div>
+            </div>`;
+          servicesAccordion.append(accordionItem);
+        });
+      });
 
-                $("#total-price, #modal-total-price").text(totalPrice);
-            }
+      $("#servicesAccordion").on("click", ".add-to-cart", function () {
+        let serviceName = $(this).data("name");
+        let servicePrice = parseFloat($(this).data("price"));
+        cart.push({ name: serviceName, price: servicePrice });
+        updateCart();
+      });
 
-            $(document).on("click", ".remove-item", function() {
-                let index = $(this).data("index");
-                cart.splice(index, 1);
-                updateCart();
-            });
+      $(document).on("click", ".remove-item", function () {
+        let index = $(this).data("index");
+        cart.splice(index, 1);
+        updateCart();
+      });
 
-            // 👇 only render reCAPTCHA when modal is visible
-            let recaptchaRendered = false;
+      function updateCart() {
+        let cartList = $("#cart-list");
+        let modalCartList = $("#modal-cart-list");
+        cartList.empty();
+        modalCartList.empty();
+        totalPrice = 0;
 
-$('#bookingModal').on('shown.bs.modal', function () {
-    console.log("AUTH OBJECT:", auth);
+        cart.forEach((item, index) => {
+          let listItem = `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              ${item.name} - ₹${item.price}
+              <button class="btn btn-sm btn-danger remove-item" data-index="${index}">
+                <i class="fa fa-times"></i>
+              </button>
+            </li>`;
+          cartList.append(listItem);
+          modalCartList.append(listItem);
+          totalPrice += item.price;
+        });
 
-  if (!recaptchaRendered && typeof auth !== 'undefined') {
-    setTimeout(() => {
-      try {
-        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
-          size: 'invisible',
-          callback: (response) => {
-            console.log('reCAPTCHA solved');
-          }
-        }, auth);
-
-        recaptchaVerifier.render();
-        recaptchaRendered = true;
-      } catch (error) {
-        console.error("Error initializing reCAPTCHA:", error);
+        $("#total-price, #modal-total-price").text(totalPrice);
       }
-    }, 200);
-  }
-});
 
-                        // Send OTP
-          $("#sendOtpBtn").on("click", function () {
-            const phone = $("#userPhone").val();
-            if (!phone) return alert("Please enter your phone number");
+      let recaptchaRendered = false;
 
-            signInWithPhoneNumber(auth, phone, window.recaptchaVerifier)
-              .then((result) => {
-                confirmationResult = result;
-                $("#otpSection").show();
-                $("#otpStatus").text("OTP sent successfully.");
-              })
-              .catch((error) => {
-                console.error("Error sending OTP:", error);
-                alert("Failed to send OTP: " + error.message);
+      $('#bookingModal').on('shown.bs.modal', function () {
+        if (!recaptchaRendered) {
+          setTimeout(() => {
+            try {
+              window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                size: 'invisible',
+                callback: (response) => {
+                  console.log('reCAPTCHA solved');
+                }
               });
+
+              recaptchaVerifier.render();
+              recaptchaRendered = true;
+            } catch (error) {
+              console.error("Error initializing reCAPTCHA:", error);
+            }
+          }, 5000);
+        }
+      });
+
+      $("#sendOtpBtn").on("click", function () {
+        const phone = $("#userPhone").val();
+        if (!phone) return alert("Please enter your phone number");
+
+        firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
+          .then((result) => {
+            confirmationResult = result;
+            $("#otpSection").show();
+            $("#otpStatus").text("OTP sent successfully.");
+          })
+          .catch((error) => {
+            console.error("Error sending OTP:", error);
+            alert("Failed to send OTP: " + error.message);
           });
+      });
 
+      $("#verifyOtpBtn").on("click", function () {
+        const code = $("#otpInput").val();
+        if (!code) return alert("Please enter the OTP");
 
+        confirmationResult.confirm(code).then((result) => {
+          $("#otpStatus").text("Phone verified ✅");
+          $("#userPhone").data("verified", true);
+        }).catch((error) => {
+          alert("Invalid OTP");
+          console.error("OTP Verification Failed:", error);
+        });
+      });
 
-          // Verify OTP
-          $("#verifyOtpBtn").on("click", function () {
-            const code = $("#otpInput").val();
-            if (!code) return alert("Please enter the OTP");
-
-            confirmationResult.confirm(code).then((result) => {
-              $("#otpStatus").text("Phone verified ✅");
-              $("#userPhone").data("verified", true);
-            }).catch((error) => {
-              alert("Invalid OTP");
-              console.error("OTP Verification Failed:", error);
-            });
-          });
-
-            // Submit form and push data to Firestore
-    $("#bookingForm").on("submit", async function (event) {
-        event.preventDefault(); // Prevent page reload
+      $("#bookingForm").on("submit", async function (event) {
+        event.preventDefault();
 
         let name = $("#userName").val();
         let phone = $("#userPhone").val();
@@ -334,44 +308,40 @@ $('#bookingModal').on('shown.bs.modal', function () {
         let gps = $("#userGps").val();
 
         if (!$("#userPhone").data("verified")) {
-            alert("Please verify your phone number via OTP before confirming the booking.");
-            return;
-          }
-
+          alert("Please verify your phone number via OTP before confirming the booking.");
+          return;
+        }
 
         if (!name || !phone || !email || !address || cart.length === 0) {
-            alert("Please fill all fields and add at least one service.");
-            return;
+          alert("Please fill all fields and add at least one service.");
+          return;
         }
 
         const bookingData = {
-            name,
-            phone,
-            email,
-            address,
-            services: cart.map(item => item.name), // Save service names only
-            total_price: `₹${totalPrice}`,
-            timestamp: serverTimestamp(),
+          name,
+          phone,
+          email,
+          address,
+          services: cart.map(item => item.name),
+          total_price: `₹${totalPrice}`,
+          timestamp: firebase.firestore.Timestamp.now()
         };
-        console.log(bookingData);
 
         try {
-            await addDoc(collection(db, "bookings"), bookingData);
-            alert("Booking confirmed!");
-            $("#bookingModal").modal("hide");
-            cart = [];
-            updateCart();
+          await db.collection("bookings").add(bookingData);
+          alert("Booking confirmed!");
+          $("#bookingModal").modal("hide");
+          cart = [];
+          updateCart();
         } catch (error) {
-            console.error("Error saving booking:", error);
-            alert("Failed to confirm booking.");
+          console.error("Error saving booking:", error);
+          alert("Failed to confirm booking.");
         }
+      });
+
     });
+  </script>
 
-
-
-
-        });
-    </script>
 
 
 </body>
