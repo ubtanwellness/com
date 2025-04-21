@@ -80,8 +80,9 @@
                           <button type="button" class="btn btn-success" id="verifyOtpBtn">Verify OTP</button>
                           <div id="otpStatus" class="mt-2 small"></div>
                         </div>
-                        <div id="recaptcha-container" class="mt-2"></div>
+
                       </div>
+                      <div id="recaptcha-container" class="mt-2"></div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
@@ -136,20 +137,7 @@
         const auth = getAuth(app);
         let confirmationResult;
 
-        function initializeRecaptcha() {
-              try {
-                window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
-                  size: 'invisible',
-                  callback: (response) => {
-                    console.log("reCAPTCHA solved");
-                  }
-                }, auth);
 
-                recaptchaVerifier.render();
-              } catch (error) {
-                console.error("Error initializing reCAPTCHA:", error);
-              }
-            }
 
 
 
@@ -278,20 +266,28 @@
             });
 
             // 👇 only render reCAPTCHA when modal is visible
-            let recaptchaRendered = false
-            console.log("AUTH IS:", auth);
+            let recaptchaRendered = false;
 
+$('#bookingModal').on('shown.bs.modal', function () {
+  if (!recaptchaRendered && typeof auth !== 'undefined') {
+    setTimeout(() => {
+      try {
+        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+          size: 'invisible',
+          callback: (response) => {
+            console.log('reCAPTCHA solved');
+          }
+        }, auth);
 
-            
+        recaptchaVerifier.render();
+        recaptchaRendered = true;
+      } catch (error) {
+        console.error("Error initializing reCAPTCHA:", error);
+      }
+    }, 200);
+  }
+});
 
-            $('#bookingModal').on('shown.bs.modal', function () {
-              if (!recaptchaRendered && typeof auth !== "undefined") {
-                initializeRecaptcha();
-                recaptchaRendered = true;
-              } else if (typeof auth === "undefined") {
-                console.error("Firebase Auth not initialized!");
-              }
-            });
                         // Send OTP
           $("#sendOtpBtn").on("click", function () {
             const phone = $("#userPhone").val();
