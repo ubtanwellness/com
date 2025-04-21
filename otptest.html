@@ -269,6 +269,8 @@
             let recaptchaRendered = false;
 
 $('#bookingModal').on('shown.bs.modal', function () {
+    console.log("AUTH OBJECT:", auth);
+
   if (!recaptchaRendered && typeof auth !== 'undefined') {
     setTimeout(() => {
       try {
