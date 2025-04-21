@@ -136,6 +136,20 @@
         const auth = getAuth(app);
         let confirmationResult;
 
+        function initializeRecaptcha() {
+              try {
+                window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+                  size: 'invisible',
+                  callback: (response) => {
+                    console.log("reCAPTCHA solved");
+                  }
+                }, auth);
+
+                recaptchaVerifier.render();
+              } catch (error) {
+                console.error("Error initializing reCAPTCHA:", error);
+              }
+            }
 
 
 
@@ -264,27 +278,21 @@
             });
 
             // 👇 only render reCAPTCHA when modal is visible
-            let recaptchaRendered = false;
+            let recaptchaRendered = false
+            console.log("AUTH IS:", auth);
 
-              $('#bookingModal').on('shown.bs.modal', function () {
-              if (!recaptchaRendered) {
-                try {
-                  window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
-                    'size': 'invisible',
-                    'callback': (response) => {
-                      console.log('reCAPTCHA solved');
-                    }
-                  }, auth); // ✅ make sure `auth` is defined correctly here
 
-                  recaptchaVerifier.render();
-                  recaptchaRendered = true;
-                } catch (error) {
-                  console.error("Error initializing RecaptchaVerifier:", error);
-                }
+            
+
+            $('#bookingModal').on('shown.bs.modal', function () {
+              if (!recaptchaRendered && typeof auth !== "undefined") {
+                initializeRecaptcha();
+                recaptchaRendered = true;
+              } else if (typeof auth === "undefined") {
+                console.error("Firebase Auth not initialized!");
               }
-              });
-
-            // Send OTP
+            });
+                        // Send OTP
           $("#sendOtpBtn").on("click", function () {
             const phone = $("#userPhone").val();
             if (!phone) return alert("Please enter your phone number");
