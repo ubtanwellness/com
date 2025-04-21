@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Services - Itura Wellness</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+    <!-- Navbar -->
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="logo.avif" alt="Itura Wellness" class="logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="content">
+
+    <div class="container mt-5">
+        <h2 class="text-center">Book Your Services</h2>
+        <div class="row">
+            <!-- Services List -->
+            <div class="col-md-8">
+                <div class="accordion" id="servicesAccordion"></div>
+            </div>
+            <!-- Booking Summary -->
+            <div class="col-md-4">
+                <h4>Booking Summary</h4>
+                <ul id="cart-list" class="list-group"></ul>
+                <p>Total Price: ₹<span id="total-price">0</span></p>
+                <button class="btn btn-success" id="confirm-booking" data-bs-toggle="modal" data-bs-target="#bookingModal">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">Confirm Your Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Selected Services:</h6>
+                    <ul id="modal-cart-list" class="list-group"></ul>
+                    <p>Total Price: ₹<span id="modal-total-price">0</span></p>
+                    <form id="bookingForm">
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="userName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="userPhone" required placeholder="+91XXXXXXXXXX">
+                            <button type="button" class="btn btn-outline-primary mt-2" id="sendOtpBtn">Send OTP</button>
+                            <div id="otpSection" style="display: none;" class="mt-2">
+                              <input type="text" id="otpInput" class="form-control mb-2" placeholder="Enter OTP">
+                              <button type="button" class="btn btn-success" id="verifyOtpBtn">Verify OTP</button>
+                              <div id="otpStatus" class="mt-2 small text-success"></div>
+                            </div>
+                            <div id="recaptcha-container" class="mt-2"></div>
+                      </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                             <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userAddress" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="userAddress" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userGps" class="form-label">GPS Location (Optional)</label>
+                            <input type="text" class="form-control" id="userGps">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+     <!-- Footer -->
+    <footer class="footer text-center">
+        <p>&copy; 2025 Itura Wellness. All Rights Reserved.</p>
+    </footer>
+</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript -->
+
+    <script type="module">
+        // Initialize Firebase (already done in your existing script)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcJ_SfhDq2I1L6iXdeNsOmG6-54top_lY",
+            authDomain: "ubtan-47b67.firebaseapp.com",
+            projectId: "ubtan-47b67",
+            storageBucket: "ubtan-47b67.appspot.com",
+            messagingSenderId: "289764255030",
+            appId: "1:289764255030:web:72e9887bb6c91334cbff97",
+            measurementId: "G-GP0LNZ275Y"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+
+        const auth = getAuth(app);
+        let confirmationResult;
+
+
+
+
+        $(document).ready(function() {
+            let cart = [];
+            let totalPrice = 0;
+
+            // Fetch services from the JSON file (you can replace this with your GitHub URL)
+            $.getJSON('https://raw.githubusercontent.com/ubtanwellness/com/main/service.json', function(data) {
+    let servicesAccordion = $("#servicesAccordion");
+    data.services.forEach(function(category) {
+        let accordionItem = `
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${category.category.replace(/\s+/g, '')}">
+                        <i class="fa fa-briefcase me-2"></i> ${category.category}
+                    </button>
+                </h2>
+                <div id="${category.category.replace(/\s+/g, '')}" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        ${category.subcategories ? category.subcategories.map(function(subcategory) {
+                            return `
+                                <h5>${subcategory.name}</h5>
+                                ${subcategory.services.map(function(service) {
+                                    return `
+                                        <div class="service-item p-3 mb-2 border rounded">
+                                            <h6>${service.name}</h6>
+                                            ${
+                                                typeof service.price === 'object'
+                                                ? Object.entries(service.price).map(([type, price]) => `
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span><strong>${type}:</strong> ₹${price}</span>
+                                                        <button class="btn btn-sm btn-pink add-to-cart"
+                                                            data-name="${service.name} (${type})"
+                                                            data-price="${price}">
+                                                            <i class="fa fa-shopping-cart"></i> Add
+                                                        </button>
+                                                    </div>
+                                                `).join('')
+                                                : `
+                                                    <p><strong>Price:</strong> ₹${service.price}</p>
+                                                    <button class="btn btn-sm btn-pink add-to-cart"
+                                                        data-name="${service.name}"
+                                                        data-price="${service.price}">
+                                                        <i class="fa fa-shopping-cart"></i> Add to Cart
+                                                    </button>
+                                                `
+                                            }
+                                        </div>
+                                    `;
+                                }).join('')}
+                            `;
+                        }).join('') : category.services.map(function(service) {
+                            return `
+                                <div class="service-item p-3 mb-2 border rounded">
+                                    <h6>${service.name}</h6>
+                                    ${
+                                        typeof service.price === 'object'
+                                        ? Object.entries(service.price).map(([type, price]) => `
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span><strong>${type}:</strong> ₹${price}</span>
+                                                <button class="btn btn-sm btn-pink add-to-cart"
+                                                    data-name="${service.name} (${type})"
+                                                    data-price="${price}">
+                                                    <i class="fa fa-shopping-cart"></i> Add
+                                                </button>
+                                            </div>
+                                        `).join('')
+                                        : `
+                                            <p><strong>Price:</strong> ₹${service.price}</p>
+                                            <button class="btn btn-sm btn-pink add-to-cart"
+                                                data-name="${service.name}"
+                                                data-price="${service.price}">
+                                                <i class="fa fa-shopping-cart"></i> Add to Cart
+                                            </button>
+                                        `
+                                    }
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        servicesAccordion.append(accordionItem);
+    });
+});
+
+
+            $("#servicesAccordion").on("click", ".add-to-cart", function() {
+                let serviceName = $(this).data("name");
+                let servicePrice = parseFloat($(this).data("price"));
+                cart.push({ name: serviceName, price: servicePrice });
+                updateCart();
+            });
+            let cartList = $("#cart-list");
+                let modalCartList = $("#modal-cart-list");
+
+            function updateCart() {
+                let cartList = $("#cart-list");
+                let modalCartList = $("#modal-cart-list");
+                cartList.empty();
+                modalCartList.empty();
+                totalPrice = 0;
+
+                cart.forEach((item, index) => {
+                    let listItem = `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${item.name} - ₹${item.price}
+                            <button class="btn btn-sm btn-danger remove-item" data-index="${index}">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </li>`;
+                    cartList.append(listItem);
+                    modalCartList.append(listItem);
+                    totalPrice += item.price;
+                });
+
+                $("#total-price, #modal-total-price").text(totalPrice);
+            }
+
+            $(document).on("click", ".remove-item", function() {
+                let index = $(this).data("index");
+                cart.splice(index, 1);
+                updateCart();
+            });
+
+            // 👇 only render reCAPTCHA when modal is visible
+              let recaptchaRendered = false;
+              $('#bookingModal').on('shown.bs.modal', function () {
+                if (!recaptchaRendered) {
+                  window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                      console.log('reCAPTCHA solved');
+                    }
+                  }, auth);
+
+                  recaptchaVerifier.render();
+                  recaptchaRendered = true;
+                }
+              });
+
+            // Send OTP
+          $("#sendOtpBtn").on("click", function () {
+            const phone = $("#userPhone").val();
+            if (!phone) return alert("Please enter your phone number");
+
+            signInWithPhoneNumber(auth, phone, window.recaptchaVerifier)
+              .then((result) => {
+                confirmationResult = result;
+                $("#otpSection").show();
+                $("#otpStatus").text("OTP sent successfully.");
+              })
+              .catch((error) => {
+                console.error("Error sending OTP:", error);
+                alert("Failed to send OTP: " + error.message);
+              });
+          });
+
+
+
+          // Verify OTP
+          $("#verifyOtpBtn").on("click", function () {
+            const code = $("#otpInput").val();
+            if (!code) return alert("Please enter the OTP");
+
+            confirmationResult.confirm(code).then((result) => {
+              $("#otpStatus").text("Phone verified ✅");
+              $("#userPhone").data("verified", true);
+            }).catch((error) => {
+              alert("Invalid OTP");
+              console.error("OTP Verification Failed:", error);
+            });
+          });
+
+            // Submit form and push data to Firestore
+    $("#bookingForm").on("submit", async function (event) {
+        event.preventDefault(); // Prevent page reload
+
+        let name = $("#userName").val();
+        let phone = $("#userPhone").val();
+        let email = $("#email").val();
+        let address = $("#userAddress").val();
+        let gps = $("#userGps").val();
+
+        if (!$("#userPhone").data("verified")) {
+            alert("Please verify your phone number via OTP before confirming the booking.");
+            return;
+          }
+
+
+        if (!name || !phone || !email || !address || cart.length === 0) {
+            alert("Please fill all fields and add at least one service.");
+            return;
+        }
+
+        const bookingData = {
+            name,
+            phone,
+            email,
+            address,
+            services: cart.map(item => item.name), // Save service names only
+            total_price: `₹${totalPrice}`,
+            timestamp: serverTimestamp(),
+        };
+        console.log(bookingData);
+
+        try {
+            await addDoc(collection(db, "bookings"), bookingData);
+            alert("Booking confirmed!");
+            $("#bookingModal").modal("hide");
+            cart = [];
+            updateCart();
+        } catch (error) {
+            console.error("Error saving booking:", error);
+            alert("Failed to confirm booking.");
+        }
+    });
+
+
+
+
+        });
+    </script>
+
+
+</body>
+</html>
