@@ -72,15 +72,15 @@
                             <input type="text" class="form-control" id="userName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="userPhone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="userPhone" required placeholder="+91XXXXXXXXXX">
-                            <button type="button" class="btn btn-outline-primary mt-2" id="sendOtpBtn">Send OTP</button>
-                            <div id="otpSection" style="display: none;" class="mt-2">
-                              <input type="text" id="otpInput" class="form-control mb-2" placeholder="Enter OTP">
-                              <button type="button" class="btn btn-success" id="verifyOtpBtn">Verify OTP</button>
-                              <div id="otpStatus" class="mt-2 small text-success"></div>
-                            </div>
-                            <div id="recaptcha-container" class="mt-2"></div>
+                        <label for="userPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="userPhone" required placeholder="+91XXXXXXXXXX">
+                        <button type="button" class="btn btn-outline-primary mt-2" id="sendOtpBtn">Send OTP</button>
+                        <div id="otpSection" style="display: none;" class="mt-2">
+                          <input type="text" id="otpInput" class="form-control mb-2" placeholder="Enter OTP">
+                          <button type="button" class="btn btn-success" id="verifyOtpBtn">Verify OTP</button>
+                          <div id="otpStatus" class="mt-2 small"></div>
+                        </div>
+                        <div id="recaptcha-container" class="mt-2"></div>
                       </div>
 
                         <div class="mb-3">
@@ -264,19 +264,24 @@
             });
 
             // 👇 only render reCAPTCHA when modal is visible
-              let recaptchaRendered = false;
+            let recaptchaRendered = false;
+
               $('#bookingModal').on('shown.bs.modal', function () {
-                if (!recaptchaRendered) {
+              if (!recaptchaRendered) {
+                try {
                   window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
                     'size': 'invisible',
                     'callback': (response) => {
                       console.log('reCAPTCHA solved');
                     }
-                  }, auth);
+                  }, auth); // ✅ make sure `auth` is defined correctly here
 
                   recaptchaVerifier.render();
                   recaptchaRendered = true;
+                } catch (error) {
+                  console.error("Error initializing RecaptchaVerifier:", error);
                 }
+              }
               });
 
             // Send OTP
