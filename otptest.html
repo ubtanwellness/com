@@ -93,9 +93,13 @@
                             <input type="text" class="form-control" id="userAddress" required>
                         </div>
                         <div class="mb-3">
-                            <label for="userGps" class="form-label">GPS Location (Optional)</label>
-                            <input type="text" class="form-control" id="userGps">
+                        <label for="userGps" class="form-label">GPS Location (Optional)</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="userGps" placeholder="Click to get location">
+                          <button type="button" class="btn btn-outline-secondary" id="getLocationBtn">📍 Get Location</button>
                         </div>
+                        <div id="locationStatus" class="form-text text-muted mt-1"></div>
+                      </div>
                         <button type="submit" class="btn btn-primary">Confirm Booking</button>
                     </form>
                 </div>
@@ -297,6 +301,27 @@
           console.error("OTP Verification Failed:", error);
         });
       });
+      //location
+      $("#getLocationBtn").on("click", function () {
+    const locationStatus = $("#locationStatus");
+    locationStatus.text("Getting location...");
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          $("#userGps").val(`${lat}, ${lng}`);
+          locationStatus.text("Location fetched successfully!");
+        },
+        function (error) {
+          locationStatus.text("Failed to get location: " + error.message);
+        }
+      );
+    } else {
+      locationStatus.text("Geolocation is not supported by this browser.");
+    }
+  });
 
       $("#bookingForm").on("submit", async function (event) {
         event.preventDefault();
