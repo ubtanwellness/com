@@ -288,9 +288,13 @@
           }, 5000);
         }
       });
-
+// OTP LOGIC
       $("#sendOtpBtn").on("click", function () {
         const phone = $("#userPhone").val();
+        if (!phone.startsWith("+91")) {
+          phone = "+91" + phone;
+        }
+
         if (!phone) return alert("Please enter your phone number");
 
         firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
@@ -339,6 +343,22 @@
     }
   });
 
+  //time timeSlots
+
+  $("#timeSlots button").click(function() {
+    // Remove active/highlight classes from all buttons
+    $("#timeSlots button").removeClass("btn-primary active").addClass("btn-outline-primary");
+
+    // Add active/highlight classes to the clicked button
+    $(this).removeClass("btn-outline-primary").addClass("btn-primary active");
+
+    // Update the hidden input with selected time
+    $("#bookingTime").val($(this).data("time"));
+
+    // Hide the error message (if shown)
+    $("#timeError").hide();
+  });
+
       $("#bookingForm").on("submit", async function (event) {
         event.preventDefault();
 
@@ -347,8 +367,8 @@
         let email = $("#email").val();
         let address = $("#userAddress").val();
         let gps = $("#userGps").val();
-        let bookingDate = $("bookingDate").val();
-        let timeSlots = $("timeSlots").val();
+        let bookingDate = $("#bookingDate").val();
+        let timeSlots = $("#bookingTime").val();
 
         if (!$("#userPhone").data("verified")) {
           alert("Please verify your phone number via OTP before confirming the booking.");
@@ -372,6 +392,7 @@
           total_price: `₹${totalPrice}`,
           timestamp: firebase.firestore.Timestamp.now()
         };
+        console.log(bookingData);
 
         try {
           await db.collection("bookings").add(bookingData);
