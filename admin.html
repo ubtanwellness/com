@@ -96,7 +96,7 @@
 
 
     // Load data on page load
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   fetchBookings(); // already there
 
   document.getElementById("filterOption").addEventListener("change", function() {
@@ -106,6 +106,7 @@
       document.getElementById("filterDate").style.display = "none";
     }
   });
+  document.getElementById("applyFilterBtn").addEventListener("click", fetchBookings);
 });
 
   </script>
@@ -121,7 +122,8 @@
   </select>
 
   <input type="date" id="filterDate" style="display: none;">
-  <button onclick="fetchBookings()" class="btn btn-primary btn-sm" style="margin-left: 10px;">Apply Filter</button>
+  <button id="applyFilterBtn" class="btn btn-primary btn-sm" style="margin-left: 10px;">Apply Filter</button>
+
 </div>
 
   <table border="1">
