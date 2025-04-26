@@ -290,7 +290,7 @@
       });
 // OTP LOGIC
       $("#sendOtpBtn").on("click", function () {
-        const phone = $("#userPhone").val();
+        let phone = $("#userPhone").val();
         if (!phone.startsWith("+91")) {
           phone = "+91" + phone;
         }
