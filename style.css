@@ -3,7 +3,10 @@
 html, body {
             height: 100%;
             margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
+
 body {
     font-family: 'Arial', sans-serif;
     background-color: #fff0f5;
@@ -19,8 +22,8 @@ body {
             padding: 20px;
         }
 
-
 /* Navbar */
+
 
  .navbar-brand .logo {
     width: 240px; /* Adjust logo size */
@@ -38,12 +41,12 @@ body {
 }
 
 .navbar-nav .nav-link {
-    color: white ;
+    color: white !important;
     font-weight: bold;
 }
 
 .navbar-nav .nav-link:hover {
-    color: #ff1493 ;
+    color: #ff1493 !important;
 }
 
 /* Hero Section Styling */
@@ -72,7 +75,7 @@ body {
 }
 
 /* Explore Services Section */
-
+/* Explore Services Section */
 .explore-container {
     margin-top: 20px;
     text-align: center; /* Center align everything */
@@ -121,19 +124,38 @@ body {
     margin-bottom: 15px;
 }
 
-accordion-button:not(.collapsed) {
-    background-color: #ff69b4 ; /* Pink color */
-    color: white ;
+/* Book services */
+.accordion-button:not(.collapsed) {
+    background-color: #ff69b4 !important; /* Pink color */
+    color: white !important;
 }
 
 .accordion-button {
     transition: background-color 0.3s ease-in-out;
 }
 
+.booking-summary-mobile {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  background: #28a745;
+  color: white;
+  border-radius: 30px;
+  padding: 10px 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+
+
 /* Footer */
 footer {
     background-color: #ff69b4;
     color: white;
     padding: 15px 0;
-    margin-top:auto;
+    margin-top: auto;
 }
