@@ -123,6 +123,11 @@
         </div>
     </div>
 </div>
+
+<div id="mobileCartSummary" class="booking-summary-mobile d-none">
+  Cart: <span id="mobileCartCount">0</span> item(s) | ₹<span id="mobileCartTotal">0</span> → View Cart
+</div>
+
      <!-- Footer -->
     <footer class="footer text-center">
         <p>&copy; 2025 Itura Wellness. All Rights Reserved.</p>
@@ -236,6 +241,17 @@
         let servicePrice = parseFloat($(this).data("price"));
         cart.push({ name: serviceName, price: servicePrice });
         updateCart();
+        // Visual feedback
+        let button = $(this);
+        button.removeClass("btn-pink btn-outline-primary").addClass("btn-success");
+        button.html('<i class="fa fa-check"></i> Added to Cart');
+
+        setTimeout(function () {
+          button.removeClass("btn-success").addClass("btn-pink");
+          button.html('<i class="fa fa-shopping-cart"></i> Add to Cart');
+        }, 2000); //
+
+
       });
 
       $(document).on("click", ".remove-item", function () {
@@ -265,7 +281,21 @@
         });
 
         $("#total-price, #modal-total-price").text(totalPrice);
+        //mobile view cart floating
+        if (cart.length > 0) {
+          $("#mobileCartSummary").removeClass("d-none");
+          $("#mobileCartCount").text(cart.length);
+          $("#mobileCartTotal").text(totalPrice);
+        } else {
+          $("#mobileCartSummary").addClass("d-none");
+        }
+
+
       }
+
+      $("#mobileCartSummary").click(function() {
+  $("#confirm-booking").click(); // Open booking modal
+});
 
       let recaptchaRendered = false;
 
@@ -290,7 +320,7 @@
       });
 // OTP LOGIC
       $("#sendOtpBtn").on("click", function () {
-        let phone = $("#userPhone").val();
+        const phone = $("#userPhone").val();
         if (!phone.startsWith("+91")) {
           phone = "+91" + phone;
         }
