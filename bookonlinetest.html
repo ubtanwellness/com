@@ -1,169 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Book Services - Itura Wellness</title>
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- Firebase v8 (simple compat-style API used below) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-  <style>
-    /* ---------- Custom styles ---------- */
-    :root{
-      --pink: #e83e8c;
-      --muted: #6c757d;
-      --bg: #f6f7fb;
-      --card: #ffffff;
-    }
-
-    html,body{
-      height:100%;
-      background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
-      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color: #222;
-    }
-
-    .wrapper {
-      min-height:100%;
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* navbar */
-    .navbar {
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(20,20,40,0.04);
-    }
-    .logo {
-      height:44px;
-      object-fit:contain;
-      border-radius:6px;
-    }
-
-    /* main container */
-    .content {
-      flex:1;
-      padding: 32px 0;
-    }
-
-    .card-custom {
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(30,30,60,0.06);
-      padding: 18px;
-    }
-
-    .btn-pink {
-      background: var(--pink);
-      color: #fff;
-      border: none;
-      box-shadow: 0 6px 14px rgba(232,62,140,0.12);
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .btn-pink:hover { transform: translateY(-1px); }
-    .btn-pink:active { transform: translateY(0); box-shadow:none; }
-
-    .service-item { background:#fff; border-radius:10px; border:1px solid rgba(20,20,40,0.04); }
-    .service-item h6 { margin-bottom:6px; }
-
-    .booking-summary-mobile {
-      position: fixed;
-      left: 12px;
-      right: 12px;
-      bottom: 18px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(20,20,40,0.12);
-      padding: 12px 16px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      z-index:1050;
-    }
-
-    /* smaller screens */
-    @media (max-width: 767px) {
-      .desktop-only { display:none !important; }
-      #mobileCartSummary { display:flex !important; }
-    }
-
-    .small-muted { color:var(--muted); font-size:.9rem; }
-    .form-section-title { font-weight:600; color:#222; margin-bottom:8px; }
-
-    /* Google sign-in button */
-    .google-btn {
-      background: #fff;
-      border: 1px solid #e6e6e6;
-      padding: 8px 12px;
-      border-radius: 8px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      cursor:pointer;
-      box-shadow:0 6px 14px rgba(10,10,20,0.04);
-    }
-    .google-btn img { height:18px; width:18px; }
-
-    /* subtle modal/content tweaks */
-    .modal-content { border-radius: 12px; }
-    .time-slot-btn.active { background: #0d6efd; color: #fff; border-color: #0d6efd; }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Services - Itura Wellness</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="wrapper">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-          <img src="logo.avif" alt="Itura Wellness" class="logo me-2">
-          <div>
-            <strong>Itura Wellness</strong><br>
-            <small class="small-muted">Book services & appointments</small>
-          </div>
-        </a>
-      </div>
-    </nav>
-
-    <div class="content">
-      <div class="container">
-        <div class="row g-4">
-          <!-- Left: Services (placeholder) -->
-          <div class="col-lg-7">
-            <div class="card-custom">
-              <h4 class="mb-3">Available Services</h4>
-
-              <!-- Example services (you can re-integrate your fetch/json logic here) -->
-              <div class="service-item p-3 mb-2">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h6 class="mb-1">Relaxing Massage</h6>
-                    <div class="small-muted">45 minutes</div>
-                  </div>
-                  <div class="text-end">
-                    <div class="mb-2"><strong>₹499</strong></div>
-                    <button class="btn btn-sm btn-pink add-to-cart" data-name="Relaxing Massage" data-price="499"><i class="fa fa-shopping-cart me-1"></i>Add</button>
-                  </div>
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <img src="logo.avif" alt="Itura Wellness" class="logo">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                    </ul>
                 </div>
-              </div>
+            </div>
+        </nav>
 
-              <div class="service-item p-3 mb-2">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h6 class="mb-1">Facial Treatment</h6>
-                    <div class="small-muted">30 minutes</div>
-                  </div>
-                  <div class="text-end">
-                    <div class="mb-2"><stron
+        <div class="content">
+            <div class="container mt-5">
+                <h2 class="text-center">Book Your Services</h2>
+                <div class="row">
+                    <!-- Services List -->
+                    <div class="col-md-8">
+                        <div class="accordion" id="servicesAccordion"></div>
+                    </div>
+                    <!-- Booking Summary -->
+                    <div class="col-md-4">
+                        <h4>Booking Summary</h4>
+                        <ul id="cart-list" class="list-group"></ul>
+                        <p>Total Price: ₹<span id="total-price">0</span></p>
+                        <button class="btn btn-success" id="confirm-booking" data-bs-toggle="modal" data-bs-target="#bookingModal">Confirm Booking</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Modal -->
+            <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="bookingModalLabel">Confirm Your Booking</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h6>Selected Services:</h6>
+                            <ul id="modal-cart-list" class="list-group"></ul>
+                            <p>Total Price: ₹<span id="modal-total-price">0</span></p>
+                            <form id="bookingForm">
+                                <div class="mb-3">
+                                    <label for="userName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="userName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="userPhone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="userPhone" required placeholder="10-digit number">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="userAddress" class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="userAddress" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="userGps" class="form-label">GPS Location (Optional)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="userGps" placeholder="Click to get location">
+                                        <button type="button" class="btn btn-outline-secondary" id="getLocationBtn">📍 Get Location</button>
+                                    </div>
+                                    <div id="locationStatus" class="form-text text-muted mt-1"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookingDate" class="form-label">Select Date</label>
+                                    <input type="date" class="form-control" id="bookingDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Select Time</label>
+                                    <div class="d-flex flex-wrap gap-2" id="timeSlots">
+                                        <button type="button" class="btn btn-outline-primary" data-time="11:00 AM">11:00 AM</button>
+                                        <button type="button" class="btn btn-outline-primary" data-time="11:30 AM">11:30 AM</button>
+                                        <button type="button" class="btn btn-outline-primary" data-time="12:00 PM">12:00 PM</button>
+                                        <button type="button" class="btn btn-outline-primary" data-time="12:30 PM">12:30 PM</button>
+                                    </div>
+                                    <input type="hidden" id="bookingTime" name="bookingTime" required>
+                                    <div id="timeError" class="text-danger small mt-1" style="display: none;">Please select a time slot</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobileCartSummary" class="booking-summary-mobile d-none">
+            Cart: <span id="mobileCartCount">0</span> item(s) | ₹<span id="mobileCartTotal">0</span> → View Cart
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer text-center">
+            <p>&copy; 2025 Itura Wellness. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcJ_SfhDq2I1L6iXdeNsOmG6-54top_lY",
+            authDomain: "ubtan-47b67.firebaseapp.com",
+            projectId: "ubtan-47b67",
+            storageBucket: "ubtan-47b67.appspot.com",
+            messagingSenderId: "289764255030",
+            appId: "1:289764255030:web:72e9887bb6c91334cbff97",
+            measurementId: "G-GP0LNZ275Y"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        $(document).ready(function () {
+            let cart = [];
+            let totalPrice = 0;
+
+            // Load services
+            $.getJSON('https://raw.githubusercontent.com/ubtanwellness/com/main/service.json', function (data) {
+                // ... keep your service accordion code as before ...
+            });
+
+            // Cart logic (add/remove)
+            $("#servicesAccordion").on("click", ".add-to-cart", function () {
+                let serviceName = $(this).data("name");
+                let servicePrice = parseFloat($(this).data("price"));
+                cart.push({ name: serviceName, price: servicePrice });
+                updateCart();
+                let button = $(this);
+                button.removeClass("btn-pink btn-outline-primary").addClass("btn-success");
+                button.html('<i class="fa fa-check"></i> Added to Cart');
+                setTimeout(() => {
+                    button.removeClass("btn-success").addClass("btn-pink");
+                    button.html('<i class="fa fa-shopping-cart"></i> Add to Cart');
+                }, 2000);
+            });
+
+            $(document).on("click", ".remove-item", function () {
+                let index = $(this).data("index");
+                cart.splice(index, 1);
+                updateCart();
+            });
+
+            function updateCart() {
+                let cartList = $("#cart-list");
+                let modalCartList = $("#modal-cart-list");
+                cartList.empty();
+                modalCartList.empty();
+                totalPrice = 0;
+                cart.forEach((item, index) => {
+                    let listItem = `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${item.name} - ₹${item.price}
+                            <button class="btn btn-sm btn-danger remove-item" data-index="${index}">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </li>`;
+                    cartList.append(listItem);
+                    modalCartList.append(listItem);
+                    totalPrice += item.price;
+                });
+                $("#total-price, #modal-total-price").text(totalPrice);
+                if (cart.length > 0) {
+                    $("#mobileCartSummary").removeClass("d-none");
+                    $("#mobileCartCount").text(cart.length);
+                    $("#mobileCartTotal").text(totalPrice);
+                } else {
+                    $("#mobileCartSummary").addClass("d-none");
+                }
+            }
+
+            // GPS logic
+            $("#getLocationBtn").on("click", function () {
+                const locationStatus = $("#locationStatus");
+                locationStatus.text("Getting location...");
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            $("#userGps").val(`${lat}, ${lng}`);
+                            locationStatus.text("Location fetched successfully!");
+                        },
+                        function (error) {
+                            locationStatus.text("Failed to get location: " + error.message);
+                        }
+                    );
+                } else {
+                    locationStatus.text("Geolocation is not supported by this browser.");
+                }
+            });
+
+            // Time slot selection
+            $("#timeSlots button").click(function () {
+                $("#timeSlots button").removeClass("btn-primary active").addClass("btn-outline-primary");
+                $(this).removeClass("btn-outline-primary").addClass("btn-primary active");
+                $("#bookingTime").val($(this).data("time"));
+                $("#timeError").hide();
+            });
+
+            // Booking submission with Google Sign-In
+            $("#bookingForm").on("submit", async function (event) {
+                event.preventDefault();
+
+                let name = $("#userName").val().trim();
+                let phone = $("#userPhone").val().trim();
+                let address = $("#userAddress").val().trim();
+                let gps = $("#userGps").val().trim();
+                let bookingDate = $("#bookingDate").val();
+                let timeSlots = $("#bookingTime").val();
+
+                // Validate 10-digit phone
+                let digits = phone.replace(/\D/g,'');
+                if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+                const phoneRegex = /^[6-9]\d{9}$/;
+                if (!phoneRegex.test(digits)) {
+                    alert("Please enter a valid 10-digit Indian phone number.");
+                    return;
+                }
+
+                if (!name || !address || !bookingDate || !timeSlots || cart.length === 0) {
+                    alert("Please fill all fields and add at least one service.");
+                    return;
+                }
+
+                try {
+                    let user;
+                    if (!auth.currentUser) {
+                        const result = await auth.signInWithPopup(provider);
+                        user = result.user;
+                    } else {
+                        user = auth.currentUser;
+                    }
+
+                    const bookingData = {
+                        name,
+                        phone: digits,
+                        email: user.email,
+                        address,
+                        gps,
+                        bookingDate,
+                        timeSlots,
+                        services: cart.map(item => item.name),
+                        total_price: `₹${totalPrice}`,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    };
+
+                    await db.collection("bookings").add(bookingData);
+                    alert("Booking confirmed ✅");
+                    $("#bookingModal").modal("hide");
+                    cart = [];
+                    updateCart();
+                } catch (error) {
+                    console.error("Booking error:", error);
+                    alert("Failed to confirm booking: " + error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
